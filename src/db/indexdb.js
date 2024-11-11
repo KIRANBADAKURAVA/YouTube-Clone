@@ -12,7 +12,7 @@ const connectDB= async ()=>{
 
         } catch (error) {
             console.log('Error in connecting DB' , error);
-            process.exit
+            process.exit(1)
             
         }
 
