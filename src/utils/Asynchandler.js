@@ -7,4 +7,4 @@ function AsyncHandler(func) {
     };
 }
 
-export default AsyncHandler;
+export  {AsyncHandler};
