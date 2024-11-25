@@ -2,7 +2,7 @@ import {cloudinary as v2} from 'cloudinary'
 import fs from 'fs'
 
    // Configuration
-    cloudinary.config({ 
+    v2.config({ 
         cloud_name: process.env.cloud_name, 
         api_key: process.env.api_key, 
         api_secret: process.env.api_secret
@@ -28,4 +28,8 @@ import fs from 'fs'
        console.log(uploadResult);
        
        return uploadResult
+   }
+
+   export {
+    fileupload
    }
