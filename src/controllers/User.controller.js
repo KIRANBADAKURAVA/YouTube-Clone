@@ -7,14 +7,14 @@ import ApiResponse from '../utils/ApiResponse.js'
 const registeruser= AsyncHandler(async (req, res)=>{
 
      // get user details from frontend
-     const {username, password, fullname, avatar,coverimage} =  req.body
+     const {username, password, fullName} =  req.body
  
     //  res.status(200).json({
     //      message: username
     //  })
      // validation - not empty
     if(
-        [username, password, fullname].some((item)=>item?.trim()==="")
+        [username, password, fullName].some((item)=>item?.trim()==="")
     ){
         throw new ApiError(409, 'All fields are required')
     }
