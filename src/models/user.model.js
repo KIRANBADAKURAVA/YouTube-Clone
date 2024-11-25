@@ -50,7 +50,7 @@ const userschema = new mongoose.Schema({
 userschema.pre('save',async function ncrypt(next){
     if(!this.isModified('password')) return next();  // functions calls only if password is modified
 
-    this.password= bcrypt.hash(this.password,10)
+    this.password= await bcrypt.hash(this.password,10)
 })
 
 
