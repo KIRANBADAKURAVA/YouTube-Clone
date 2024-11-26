@@ -35,7 +35,8 @@ const userschema = new mongoose.Schema({
     },
     watchHistory:[
         {
-            type: Object.Schema.type.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
+
             ref: 'video'
         }
     ],
@@ -56,7 +57,7 @@ userschema.pre('save',async function ncrypt(next){
 
 //password check
 
-userschema.methods.isPasswordCorrect(async function(password){
+userschema.methods.isPasswordCorrect= (async function(password){
     return await bcrypt.compare(this.password,password)
 })
 
