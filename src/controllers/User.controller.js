@@ -135,7 +135,8 @@ const loginuser= AsyncHandler(async (req, res)=>{
     
     
     // ***password check***
-    const boolpassword = user.isPasswordCorrect(password)
+    const boolpassword = await user.isPasswordCorrect(password)
+
     
     
     if(!boolpassword) {
@@ -194,12 +195,31 @@ return res
 })
 
 
+ //  ------ Update controllers----  
 
+ // Change Password 
+
+ const updatePassword= AsyncHandler(async (req,res)=>{
+  ;console.log(req.user._id);
+  
+  const user= await User.findById(req.user._id)
+  if(!user){
+     throw new ApiError(500, 'Something went wrong')
+  }
+  console.log(req.body);
+  
+     user.password = req.body.password;
+
+  await user.save({validateBeforeSave: false})
+
+  return res.status(200).json(new ApiResponse(200, user, 'Password updated successfully '))
+ })
 
 export {
     registeruser,
     loginuser,
-    Logoutuser
+    Logoutuser,
+    updatePassword
 }
 
 
