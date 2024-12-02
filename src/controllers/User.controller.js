@@ -260,8 +260,9 @@ const updateAvatar = AsyncHandler(async (req, res)=>{
 
   if(!avatarlocalpath) return new ApiError(400, 'error in uploading avatar to local path ')
 
-    const avatar= fileupload(avatarlocalpath)
-
+    const avatar= await fileupload(avatarlocalpath)
+    console.log(avatar);
+  
     if(!avatar) return new ApiError(500, 'error in uploading avatar to cloudinary')
 
       const user = await User.findByIdAndUpdate(
@@ -290,9 +291,9 @@ const updateCover = AsyncHandler(async (req, res)=>{
 
   if(!coverlocalpath) return new ApiError(400, 'error in uploading coverimage to local path ')
 
-    const coverimage= fileupload(coverlocalpath)
+    const coverimage= await fileupload(coverlocalpath)
 
-    if(!cover) return new ApiError(500, 'error in uploading coverimage to cloudinary')
+    if(!coverimage) return new ApiError(500, 'error in uploading coverimage to cloudinary')
 
       const user = await User.findByIdAndUpdate(
         req.user._id,
