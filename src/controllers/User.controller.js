@@ -3,6 +3,7 @@ import {ApiError}  from '../utils/ApiError.js'
 import {User} from '../models/user.model.js'
 import fileupload from '../utils/cloudinary.utils.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
+import mongoose from "mongoose";
 
 
 // User registration
@@ -280,6 +281,7 @@ const updateAvatar = AsyncHandler(async (req, res)=>{
     return res.status(200).json(new ApiResponse(200,user,' Avatar updated succesfully'))
 })
 
+// Todo delete old one from cloudinary
 
 // Update Cover Image
 const updateCover = AsyncHandler(async (req, res)=>{
@@ -309,9 +311,119 @@ const updateCover = AsyncHandler(async (req, res)=>{
     return res.status(200).json(new ApiResponse(200,user,' Cover inmage updated succesfully'))
 })
 
+// --- Aggregate piplines---
 
+// Channel Details
+const getChanneldetails= AsyncHandler( async ( req, res )=>{ 
 
+  const username= req.params
+  if(!username) return new ApiError(400, 'Cannot find channel')
 
+    const channel = await User.aggregate([
+      {
+        $match : {
+          username : username.toLowerCase()
+        }
+      },
+      // pipeline for Array of subscribers
+      {
+        $lookup :{
+          from: 'subscribers',
+          localField: "_id",
+          foreignField:"subscriber",
+          as: 'Subscribers'
+
+        }
+      },
+      // pipeline from array of Subsribed channels
+      {
+        $lookup:{
+          from: 'subscribers',
+          localField: "_id",
+          foreignField:"channel",
+          as: 'SubscribedTo'
+        }
+      },
+      {
+        $addFields:{
+          subcribersCount: { $size : "$Subscribers"},
+          subcribedCount: { $size : "$SubscribedTo"},
+          isSubscribed :{
+            $cond :{
+              $if : { $in : [req.user?._id, 'Subscribers']},
+                then: true,
+                else: false
+              
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          fullName: 1,
+          username: 1,
+          subscribersCount: 1,
+          subcribedCount: 1,
+          isSubscribed: 1,
+          avatar: 1,
+          coverImage: 1,
+          email: 1
+      }
+      }
+
+    ])
+
+    if(!channel.length) return new ApiError(400, 'Error in fetching channel data')
+
+      return res.status(200).json(new ApiResponse(200, channel[0], 'Channel data fetched successfully'))
+
+ } )
+
+// Current user watch history
+const getWatchHistory= AsyncHandler(async ( req, res )=>{
+
+  const user= await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user?._id) 
+    }
+  },
+  {
+    $lookup :{
+        from: 'videos',
+        localField: 'watchHistory',
+        foreignField: '_id',
+        as : 'watchHistory',
+              pipeline: {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as:'owner',
+                      pipeline :{
+                      $project:{
+                        _id:1,
+                        email:1,
+                        username:1,
+                        avatar:1
+                      
+                      }
+                }
+              }
+    } 
+  },
+  {
+    $addFields:{
+      owner:{
+         $first: "$owner"
+      }
+    }
+  }
+  ])
+
+  if(!user) return new ApiError(500, 'something went wrong while fetching watch histry')
+
+    return res.status(200).json(new ApiResponse(200,user[0].watchHisory,'Watch histry fetched successfully' ))
+})
 
 
 
@@ -323,7 +435,9 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateAvatar,
-    updateCover
+    updateCover,
+    getChanneldetails,
+    getWatchHistory
 }
 
 
