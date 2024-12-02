@@ -4,6 +4,7 @@ import {User} from '../models/user.model.js'
 import fileupload from '../utils/cloudinary.utils.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 
+
 // User registration
 const registeruser= AsyncHandler(async (req, res)=>{
 
@@ -112,6 +113,7 @@ const AccessandRefreshTokenGenerater= async(userid)=>{
   return {accessToken,refreshToken}
 }
 
+
 // Login 
 const loginuser= AsyncHandler(async (req, res)=>{
 
@@ -136,8 +138,8 @@ const loginuser= AsyncHandler(async (req, res)=>{
     
     // ***password check***
     const boolpassword = await user.isPasswordCorrect(password)
-
     
+    //console.log(boolpassword);
     
     if(!boolpassword) {
       throw new ApiError(401,'Invalid Username or Password')
@@ -172,6 +174,7 @@ const loginuser= AsyncHandler(async (req, res)=>{
 
 })
 
+
 //logout user
 const Logoutuser= AsyncHandler(async(req,res)=>{
     await User.findByIdAndUpdate(
@@ -195,31 +198,132 @@ return res
 })
 
 
+//  Get current User
+const getCurrentUser= AsyncHandler(async (req,res)=>{
+//console.log(req.user._id);
+
+  
+  
+  return res.status(201).json(
+    new ApiResponse(200, req.user, "User data fetched Successfully"))
+})
+
  //  ------ Update controllers----  
 
- // Change Password 
 
+ // Change Password 
  const updatePassword= AsyncHandler(async (req,res)=>{
-  ;console.log(req.user._id);
+      const {oldPassword, newPassword}= req.body
   
   const user= await User.findById(req.user._id)
   if(!user){
      throw new ApiError(500, 'Something went wrong')
   }
-  console.log(req.body);
-  
-     user.password = req.body.password;
+  //console.log(req.body);
+     const boolpassword = user.isPasswordCorrect(oldPassword)
+     if(!boolpassword){
+      throw new ApiError(400, 'Incorrect Password')
+     }
+     user.password = newPassword;
+     await user.save({validateBeforeSave: false})
 
-  await user.save({validateBeforeSave: false})
-
-  return res.status(200).json(new ApiResponse(200, user, 'Password updated successfully '))
+    return res.status(200).json(new ApiResponse(200,  user,'Password updated successfully '))
  })
+
+
+// Update Account Details 
+const updateAccountDetails= AsyncHandler(async(req,res)=>{
+
+  const {username, fullName} = req.body
+
+  if(!username && !fullName) return new ApiError(400, 'Atleast one Field is required')
+
+    const user= await User.findById(req.user._id).select('-password')
+
+    if (!user) return new ApiError(500,'Something went wrong ')
+
+    if(username) user.username=username
+    if(fullName) user.fullName=fullName
+
+    user.save({validateBeforeSave: false})
+    return res.status(200).json(
+      new ApiResponse(200, user,'Profile Updated successfully')
+    )
+})
+
+
+// Update Avatar
+const updateAvatar = AsyncHandler(async (req, res)=>{
+
+  const avatarlocalpath= req.file?.path
+
+  if(!avatarlocalpath) return new ApiError(400, 'error in uploading avatar to local path ')
+
+    const avatar= fileupload(avatarlocalpath)
+
+    if(!avatar) return new ApiError(500, 'error in uploading avatar to cloudinary')
+
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+          $set :{
+            avatar : avatar.url
+          }
+        },
+        {
+          new:true
+        }
+      ).select('-password')
+
+      if(!user) return new ApiError(500, 'Something went wrong in finding user ')
+
+    return res.status(200).json(new ApiResponse(200,user,' Avatar updated succesfully'))
+})
+
+
+// Update Cover Image
+const updateCover = AsyncHandler(async (req, res)=>{
+
+  const coverlocalpath= req.file?.path
+
+  if(!coverlocalpath) return new ApiError(400, 'error in uploading coverimage to local path ')
+
+    const coverimage= fileupload(coverlocalpath)
+
+    if(!cover) return new ApiError(500, 'error in uploading coverimage to cloudinary')
+
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+          $set :{
+            coverimage : coverimage.url
+          }
+        },
+        {
+          new:true
+        }
+      ).select('-password')
+
+      if(!user) return new ApiError(500, 'Something went wrong in finding user ')
+
+    return res.status(200).json(new ApiResponse(200,user,' Cover inmage updated succesfully'))
+})
+
+
+
+
+
+
 
 export {
     registeruser,
     loginuser,
     Logoutuser,
-    updatePassword
+    updatePassword,
+    getCurrentUser,
+    updateAccountDetails,
+    updateAvatar,
+    updateCover
 }
 
 

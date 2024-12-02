@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { loginuser, Logoutuser, registeruser, updatePassword} from '../controllers/User.controller.js'
+import { getCurrentUser, loginuser, Logoutuser, registeruser, updateAccountDetails, updateAvatar, updatePassword} from '../controllers/User.controller.js'
 import { upload } from '../middlewares/multer.middleware.js'
 import { Tokenverification } from '../middlewares/auth.middleware.js'
 
@@ -24,6 +24,10 @@ router.route('/login').post(loginuser)
 router.route('/logout').post(Tokenverification,Logoutuser)
 
 router.route('/updatepassword').post(Tokenverification,updatePassword)
+
+router.route('/getuser').get(Tokenverification,getCurrentUser)
+
+router.route('/updateprofile').patch(Tokenverification, updateAccountDetails)
 
 
 export default router
