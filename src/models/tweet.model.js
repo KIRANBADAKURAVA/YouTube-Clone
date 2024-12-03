@@ -8,7 +8,7 @@ const tweetSchema = mongoose.Schema({
         },
 
         content:{
-            type: string
+            type: String
         }
 
 },
@@ -16,4 +16,4 @@ const tweetSchema = mongoose.Schema({
     timestamps: true
 })
 
-export const Video= mongoose.model('Video', tweetSchema)
+export const Tweet= mongoose.model('Tweet', tweetSchema)

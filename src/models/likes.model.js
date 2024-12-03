@@ -24,4 +24,4 @@ const likesSchema= mongoose.Schema({
 
 },{ timestamps: true })
 
-export const Like= mongoose.model('Video', likesSchema)
+export const Like= mongoose.model('Like', likesSchema)
