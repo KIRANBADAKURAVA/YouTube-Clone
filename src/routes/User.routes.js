@@ -3,9 +3,9 @@ import { getChanneldetails, getCurrentUser, getWatchHistory, loginuser, Logoutus
 import { upload } from '../middlewares/multer.middleware.js'
 import { Tokenverification } from '../middlewares/auth.middleware.js'
 
-const router =Router() 
+const UserRouter =Router() 
 
-router.route('/register').post(
+UserRouter.route('/register').post(
     upload.fields([
         {
             name: 'avatar',
@@ -19,23 +19,23 @@ router.route('/register').post(
     registeruser
 )
 
-router.route('/login').post(loginuser)
+UserRouter.route('/login').post(loginuser)
 
-router.route('/logout').post(Tokenverification,Logoutuser)
+UserRouter.route('/logout').post(Tokenverification,Logoutuser)
 
-router.route('/updatepassword').post(Tokenverification,updatePassword)
+UserRouter.route('/updatepassword').post(Tokenverification,updatePassword)
 
-router.route('/getuser').get(Tokenverification,getCurrentUser)
+UserRouter.route('/getuser').get(Tokenverification,getCurrentUser)
 
-router.route('/updateprofile').patch(Tokenverification, updateAccountDetails)
+UserRouter.route('/updateprofile').patch(Tokenverification, updateAccountDetails)
 
-router.route('/updateavatar').patch(Tokenverification,upload.single('avatar'), updateAvatar)
+UserRouter.route('/updateavatar').patch(Tokenverification,upload.single('avatar'), updateAvatar)
 
-router.route('/updatecover').patch(Tokenverification,upload.single('coverimage'), updateCover)
+UserRouter.route('/updatecover').patch(Tokenverification,upload.single('coverimage'), updateCover)
 
-router.route('/channel/:username').get(Tokenverification,getChanneldetails)
+UserRouter.route('/channel/:username').get(Tokenverification,getChanneldetails)
 
-router.route('/watchhistry').get(Tokenverification,getWatchHistory)
+UserRouter.route('/watchhistry').get(Tokenverification,getWatchHistory)
 
 
-export default router
+export default UserRouter

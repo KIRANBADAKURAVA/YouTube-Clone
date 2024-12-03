@@ -1,7 +1,7 @@
 import {AsyncHandler} from "../utils/Asynchandler.js";
 import {ApiError}  from '../utils/ApiError.js'
 import {User} from '../models/user.model.js'
-import fileupload from '../utils/cloudinary.utils.js'
+import {fileupload, filedelete} from '../utils/cloudinary.utils.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 import mongoose from "mongoose";
 

@@ -26,10 +26,28 @@ import fs from 'fs'
     } catch (error) {
         fs.unlinkSync(cloudinaryfilepath)
         throw error
-    }
-
-       
-      
+    }   
    }
 
-   export default fileupload
+   const filedelete= async (cloudinaryfilepath)=>{
+    if(!cloudinaryfilepath) return null
+
+    try {
+        const deleteResult = await cloudinary.uploader
+        .destroy(
+            cloudinaryfilepath, {
+                resource_type:'auto',
+            }  
+        )
+       
+        return uploadResult
+    } catch (error) {
+    
+        throw error
+    }   
+   }
+
+   export {
+            fileupload, 
+            filedelete
+        } 
