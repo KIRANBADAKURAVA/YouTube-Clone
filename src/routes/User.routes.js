@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { getCurrentUser, loginuser, Logoutuser, registeruser, updateAccountDetails, updateAvatar, updateCover, updatePassword} from '../controllers/User.controller.js'
+import { getChanneldetails, getCurrentUser, getWatchHistory, loginuser, Logoutuser, registeruser, updateAccountDetails, updateAvatar, updateCover, updatePassword} from '../controllers/User.controller.js'
 import { upload } from '../middlewares/multer.middleware.js'
 import { Tokenverification } from '../middlewares/auth.middleware.js'
 
@@ -33,7 +33,9 @@ router.route('/updateavatar').patch(Tokenverification,upload.single('avatar'), u
 
 router.route('/updatecover').patch(Tokenverification,upload.single('coverimage'), updateCover)
 
+router.route('/channel/:username').get(Tokenverification,getChanneldetails)
 
+router.route('/watchhistry').get(Tokenverification,getWatchHistory)
 
 
 export default router

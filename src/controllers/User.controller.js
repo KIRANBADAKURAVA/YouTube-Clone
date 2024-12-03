@@ -317,7 +317,7 @@ const updateCover = AsyncHandler(async (req, res)=>{
 // Channel Details
 const getChanneldetails= AsyncHandler( async ( req, res )=>{ 
 
-  const username= req.params
+  const {username}= req.params
   if(!username) return new ApiError(400, 'Cannot find channel')
 
     const channel = await User.aggregate([
@@ -350,12 +350,12 @@ const getChanneldetails= AsyncHandler( async ( req, res )=>{
           subcribersCount: { $size : "$Subscribers"},
           subcribedCount: { $size : "$SubscribedTo"},
           isSubscribed :{
-            $cond :{
-              $if : { $in : [req.user?._id, 'Subscribers']},
-                then: true,
-                else: false
-              
-            }
+            $cond :
+              { 
+              if: [req.user?._id, "$Subscribers.subscriber"] ,
+              then:true,
+              else : false 
+              }
           }
         }
       },
@@ -363,7 +363,7 @@ const getChanneldetails= AsyncHandler( async ( req, res )=>{
         $project: {
           fullName: 1,
           username: 1,
-          subscribersCount: 1,
+          subcribersCount: 1,
           subcribedCount: 1,
           isSubscribed: 1,
           avatar: 1,
@@ -381,51 +381,59 @@ const getChanneldetails= AsyncHandler( async ( req, res )=>{
  } )
 
 // Current user watch history
-const getWatchHistory= AsyncHandler(async ( req, res )=>{
-
-  const user= await User.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(req.user?._id) 
-    }
-  },
-  {
-    $lookup :{
-        from: 'videos',
-        localField: 'watchHistory',
-        foreignField: '_id',
-        as : 'watchHistory',
-              pipeline: {
-                from: 'users',
-                localField: 'owner',
-                foreignField: '_id',
-                as:'owner',
-                      pipeline :{
-                      $project:{
-                        _id:1,
-                        email:1,
-                        username:1,
-                        avatar:1
-                      
+const getWatchHistory = AsyncHandler(async(req, res) => {
+  const user = await User.aggregate([
+      {
+          $match: {
+              _id: new mongoose.Types.ObjectId(req.user._id)
+          }
+      },
+      {
+          $lookup: {
+              from: "videos",
+              localField: "watchHistory",
+              foreignField: "_id",
+              as: "watchHistory",
+              pipeline: [
+                  {
+                      $lookup: {
+                          from: "users",
+                          localField: "owner",
+                          foreignField: "_id",
+                          as: "owner",
+                          pipeline: [
+                              {
+                                  $project: {
+                                      fullName: 1,
+                                      username: 1,
+                                      avatar: 1
+                                  }
+                              }
+                          ]
                       }
-                }
-              }
-    } 
-  },
-  {
-    $addFields:{
-      owner:{
-         $first: "$owner"
+                  },
+                  {
+                      $addFields:{
+                          owner:{
+                              $first: "$owner"
+                          }
+                      }
+                  }
+              ]
+          }
       }
-    }
-  }
   ])
 
-  if(!user) return new ApiError(500, 'something went wrong while fetching watch histry')
-
-    return res.status(200).json(new ApiResponse(200,user[0].watchHisory,'Watch histry fetched successfully' ))
+  return res
+  .status(200)
+  .json(
+      new ApiResponse(
+          200,
+          user[0].watchHistory,
+          "Watch history fetched successfully"
+      )
+  )
 })
-
 
 
 export {
