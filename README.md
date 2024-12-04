@@ -14,6 +14,5 @@ A full-stack web application that mimics basic functionality of YouTube, includi
 - **File Upload**: Multer
 - **Authentication**: JWT (JSON Web Tokens)
 - **Database**: (e.g., MongoDB, PostgreSQL, etc.)
-- **Front-end**: (Specify if you are using React, Vanilla JS, etc.)
 - **Others**: dotenv for environment variables, nodemon for development
 
