@@ -17,10 +17,3 @@ A full-stack web application that mimics basic functionality of YouTube, includi
 - **Front-end**: (Specify if you are using React, Vanilla JS, etc.)
 - **Others**: dotenv for environment variables, nodemon for development
 
-## Installation
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/KIRANBADAKURAVA/YouTube-Clone.git
-cd YouTube-Clone
