@@ -331,7 +331,7 @@ const getChanneldetails= AsyncHandler( async ( req, res )=>{
         $lookup :{
           from: 'subscribers',
           localField: "_id",
-          foreignField:"subscriber",
+          foreignField:"channel",
           as: 'Subscribers'
 
         }
@@ -341,7 +341,7 @@ const getChanneldetails= AsyncHandler( async ( req, res )=>{
         $lookup:{
           from: 'subscribers',
           localField: "_id",
-          foreignField:"channel",
+          foreignField:"subscriber",
           as: 'SubscribedTo'
         }
       },
